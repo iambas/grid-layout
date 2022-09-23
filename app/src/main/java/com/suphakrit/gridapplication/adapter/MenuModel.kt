@@ -1,12 +1,12 @@
 package com.suphakrit.gridapplication.adapter
 
 data class MenuModel(
-    val id: String,
     val type: MenuType,
+    val id: String,
     val name: String,
-    var isSelected: Boolean = false,
-    val menuDetailIndex: Int,
+    var index: Int,
     var menuDetails: List<MenuDetailModel>,
+    var isSelected: Boolean = false,
 )
 
 data class MenuDetailModel(

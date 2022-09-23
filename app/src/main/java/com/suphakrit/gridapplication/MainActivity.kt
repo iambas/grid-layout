@@ -13,7 +13,10 @@ class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val viewModel: MainViewModel by viewModels()
     private val menuAdapter by lazy {
-        MenuAdapter(onMainItemClicked = viewModel::onMainMenuClicked)
+        MenuAdapter(
+            onMainItemClicked = viewModel::onMainMenuClicked,
+            onSubMenuClicked = viewModel::onSubMenuClicked,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,17 +24,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         observe()
         setUpView()
+        viewModel.createMenu()
         viewModel.displayMenu()
     }
 
     private fun setUpView() {
         binding.menuRecyclerView.apply {
-            layoutManager = GridLayoutManager(this@MainActivity, 3).apply {
+            layoutManager = GridLayoutManager(this@MainActivity, CATEGORY_SPAN).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
                         return when (menuAdapter.getItemViewType(position)) {
                             MenuType.MAIN.ordinal -> 1
-                            else -> 3
+                            else -> CATEGORY_SPAN
                         }
                     }
                 }

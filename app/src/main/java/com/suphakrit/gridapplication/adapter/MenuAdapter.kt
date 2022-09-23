@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.suphakrit.gridapplication.R
+import com.suphakrit.gridapplication.SUB_CATEGORY_SPAN
 import com.suphakrit.gridapplication.databinding.ItemMenuBinding
 import com.suphakrit.gridapplication.databinding.ItemMenuDetailBinding
 
 class MenuAdapter constructor(
     private val onMainItemClicked: (MenuModel) -> Unit,
+    private val onSubMenuClicked: (MenuModel) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = arrayListOf<MenuModel>()
@@ -39,7 +41,7 @@ class MenuAdapter constructor(
                 holder.bind(items[position])
             }
             is MenuDetailViewHolder -> {
-                holder.bind(items[position].menuDetails)
+                holder.bind(items[position])
             }
         }
     }
@@ -75,28 +77,32 @@ class MenuAdapter constructor(
         private val binding: ItemMenuDetailBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private var menu = listOf<MenuDetailModel>()
+        private var menu: MenuModel? = null
+        private var menuDetails = listOf<MenuDetailModel>()
         private val menuAdapter = MenuDetailAdapter(
             onItemClicked = { onItemClicked(it) },
         )
 
-        fun bind(menu: List<MenuDetailModel>) {
-            this.menu = menu
+        fun bind(menuItem: MenuModel) {
+            menu = menuItem
+            menuDetails = menuItem.menuDetails
             binding.menuDetailRecyclerView.apply {
-                layoutManager = GridLayoutManager(context, 3)
+                layoutManager = GridLayoutManager(context, SUB_CATEGORY_SPAN)
                 adapter = menuAdapter
             }
-            menuAdapter.update(menu)
+            menuAdapter.update(menuDetails)
         }
 
         private fun onItemClicked(menuItem: MenuDetailModel) {
-            menu.map {
+            menuDetails.map {
                 if (it.id == menuItem.id) {
                     it.isSelected = !it.isSelected
                 }
                 it
             }
-            menuAdapter.update(menu)
+            menuAdapter.update(menuDetails)
+
+            menu?.let(onSubMenuClicked)
         }
     }
 }
