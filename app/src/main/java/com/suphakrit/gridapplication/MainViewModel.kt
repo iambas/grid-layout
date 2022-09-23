@@ -19,17 +19,6 @@ class MainViewModel : ViewModel() {
         menu.clear()
         var indexCounter = 0
         CATEGORIES.forEachIndexed { index, category ->
-            if (index > 0 && index % CATEGORY_SPAN == 0) {
-                menu.add(
-                    MenuModel(
-                        type = MenuType.DETAIL,
-                        id = category.id,
-                        name = category.name,
-                        index = indexCounter++,
-                        menuDetails = listOf(),
-                    )
-                )
-            }
             menu.add(
                 MenuModel(
                     type = MenuType.MAIN,
@@ -45,7 +34,9 @@ class MainViewModel : ViewModel() {
                 )
             )
 
-            if (index == CATEGORIES.lastIndex) {
+            val isMenuDetailIndex = ((index + 1) % CATEGORY_SPAN == 0)
+                    || (index == CATEGORIES.lastIndex && (index + 1) % CATEGORY_SPAN != 0)
+            if (isMenuDetailIndex) {
                 menu.add(
                     MenuModel(
                         type = MenuType.DETAIL,
@@ -57,6 +48,8 @@ class MainViewModel : ViewModel() {
                 )
             }
         }
+
+        Log.d("MainViewModel", "menu count: ${menu.count()}\n$menu")
     }
 
     fun displayMenu() {
